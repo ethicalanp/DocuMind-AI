@@ -1,0 +1,117 @@
+# =========================
+# Python
+# =========================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# =========================
+# Environment variables
+# =========================
+
+.env
+.env.*
+!.env.example
+
+# =========================
+# Database
+# =========================
+
+*.db
+*.sqlite
+*.sqlite3
+
+# =========================
+# Uploaded files
+# =========================
+
+uploads/
+media/
+documents/
+
+# =========================
+# Logs
+# =========================
+
+*.log
+logs/
+
+# =========================
+# IDE / Editor
+# =========================
+
+.vscode/
+.idea/
+
+# =========================
+# OS files
+# =========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# Testing / Coverage
+# =========================
+
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.*
+
+# =========================
+# Ruff / mypy
+# =========================
+
+.ruff_cache/
+.mypy_cache/
+
+# =========================
+# Node / React
+# =========================
+
+node_modules/
+dist/
+build/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Frontend environment
+# =========================
+
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# =========================
+# Docker
+# =========================
+
+*.pid
+
+# =========================
+# Local vector databases
+# =========================
+
+chroma/
+chroma_db/
+vector_db/
+
+# =========================
+# Temporary files
+# =========================
+
+*.tmp
+*.temp
+*.swp
