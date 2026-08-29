@@ -1,13 +1,15 @@
 import os
 import shutil
+from pathlib import Path
 
 from fastapi import (
     APIRouter,
     Depends,
-    UploadFile,
     File,
-    HTTPException
+    HTTPException,
+    UploadFile
 )
+from fastapi.responses import FileResponse
 
 from sqlalchemy.orm import Session
 
@@ -26,6 +28,7 @@ from app.RAG.chunking import chunk_text
 from app.services.embedding_service import create_embedding
 
 from app.services.vector_service import add_chunk
+from app.services.vector_service import delete_document_chunks
 
 from app.services.retrieval_service import (
     retrieve_relevant_chunks
@@ -57,7 +60,8 @@ def get_db():
 # Upload Configuration
 # ==========================================
 
-UPLOAD_DIR = "uploads"
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+UPLOAD_DIR = str(PROJECT_ROOT / "uploads")
 
 os.makedirs(
     UPLOAD_DIR,
@@ -563,3 +567,60 @@ def get_document_chunks(
         ]
 
     }
+
+
+@router.get("/{document_id}/download")
+def download_document(
+    document_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    document = (
+        db.query(Document)
+        .filter(
+            Document.id == document_id,
+            Document.user_id == current_user.id
+        )
+        .first()
+    )
+
+    if document is None or not os.path.exists(document.file_path):
+        raise HTTPException(status_code=404, detail="Document file not found")
+
+    return FileResponse(
+        document.file_path,
+        filename=document.filename,
+        media_type="application/octet-stream"
+    )
+
+
+@router.delete("/{document_id}")
+def delete_document(
+    document_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    document = (
+        db.query(Document)
+        .filter(
+            Document.id == document_id,
+            Document.user_id == current_user.id
+        )
+        .first()
+    )
+
+    if document is None:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    delete_document_chunks(document.id)
+    db.query(DocumentChunk).filter(
+        DocumentChunk.document_id == document.id
+    ).delete(synchronize_session=False)
+
+    if os.path.exists(document.file_path):
+        os.remove(document.file_path)
+
+    db.delete(document)
+    db.commit()
+
+    return {"message": "Document deleted successfully"}
