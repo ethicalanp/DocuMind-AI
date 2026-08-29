@@ -1,7 +1,10 @@
-from sqlalchemy import create_engine 
-from sqlalchemy.orm import sessionmaker,declarative_base 
+from pathlib import Path
 
-DATABASE_URL = "sqlite:///./documind.db"
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+DATABASE_URL = f"sqlite:///{PROJECT_ROOT / 'documind.db'}"
 
 engine = create_engine(
     DATABASE_URL,
