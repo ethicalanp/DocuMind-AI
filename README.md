@@ -1,5 +1,5 @@
 # DocuMind AI
-
+<img width="1920" height="962" alt="Image" src="https://github.com/user-attachments/assets/db54fef8-526b-4d62-80d3-195b008b5f1b" />
 **Transform your documents into intelligent conversations.**
 
 DocuMind AI is an AI-powered document intelligence platform that lets you upload business documents and ask natural language questions about them. Using retrieval-augmented generation (RAG) and advanced language models, it provides accurate, grounded answers backed by your source documents.
