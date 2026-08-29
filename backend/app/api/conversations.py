@@ -158,3 +158,64 @@ def get_messages(
             for message in messages
         ]
     }
+
+
+@router.patch("/{conversation_id}")
+def rename_conversation(
+    conversation_id: int,
+    request: ConversationCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    conversation = (
+        db.query(Conversation)
+        .filter(
+            Conversation.id == conversation_id,
+            Conversation.user_id == current_user.id
+        )
+        .first()
+    )
+
+    if conversation is None:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+
+    title = (request.title or "").strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Title cannot be empty")
+
+    conversation.title = title[:120]
+    db.commit()
+    db.refresh(conversation)
+
+    return {"conversation": {
+        "id": conversation.id,
+        "title": conversation.title,
+        "created_at": conversation.created_at
+    }}
+
+
+@router.delete("/{conversation_id}")
+def delete_conversation(
+    conversation_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    conversation = (
+        db.query(Conversation)
+        .filter(
+            Conversation.id == conversation_id,
+            Conversation.user_id == current_user.id
+        )
+        .first()
+    )
+
+    if conversation is None:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+
+    db.query(Message).filter(
+        Message.conversation_id == conversation.id
+    ).delete(synchronize_session=False)
+    db.delete(conversation)
+    db.commit()
+
+    return {"message": "Conversation deleted successfully"}
