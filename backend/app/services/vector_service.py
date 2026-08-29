@@ -1,7 +1,10 @@
+from pathlib import Path
+
 import chromadb
 
 
-CHROMA_PATH = "chroma_db"
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+CHROMA_PATH = str(PROJECT_ROOT / "chroma_db")
 
 
 # ==========================================
@@ -74,3 +77,9 @@ def search_chunks(
     )
 
     return results
+
+
+def delete_document_chunks(document_id: int):
+    collection.delete(
+        where={"document_id": document_id}
+    )
